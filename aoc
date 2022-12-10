@@ -23,4 +23,5 @@ $sample
 
 EOF
 
+chmod +x $outfile
 subl $outfile
