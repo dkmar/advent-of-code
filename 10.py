@@ -14,6 +14,26 @@ addx 1
 
 x = 1
 cycle = 1
+total = 0
+checkpts = range(20, 220+1, 40)
+
+for line in lines:
+    if cycle in checkpts:
+        total += cycle * x
+    cycle += 1
+    match line.split():
+        case 'addx', n:
+            if cycle in checkpts:
+                total += cycle * x
+            cycle += 1
+            x += int(n)
+
+print(total)
+
+# ---
+
+x = 1
+cycle = 1
 aligned = lambda: abs((cycle-1)%40 - x) <= 1
 out = []
 
