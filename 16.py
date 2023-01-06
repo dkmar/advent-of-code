@@ -3,6 +3,7 @@ from typing import FrozenSet
 import util
 import sys, math
 from collections import defaultdict, deque
+from functools import cache
 
 # 18:13
 
@@ -34,10 +35,8 @@ Valve II has flow rate=0; tunnels lead to valves AA, JJ
 Valve JJ has flow rate=21; tunnel leads to valve II
 '''
 
-cnt = [0]
-sys.setrecursionlimit(1_000)
+@cache
 def max_flow(u: str, opened_valves: FrozenSet[str], time: int = 30) -> int:
-    cnt[0] += 1
     '''
     Return the max possible flow from the path starting at u.
     '''
@@ -45,17 +44,18 @@ def max_flow(u: str, opened_valves: FrozenSet[str], time: int = 30) -> int:
         return 0
 
     # case 1: we don't open this valve.
-    best = max(max_flow(v, opened_valves, time - 1) for v in graph[u])
+    best1 = max(max_flow(v, opened_valves, time - 1) for v in graph[u])
+
+    if u in opened_valves or flow_rate[u] == 0:
+        # early exit if it doesn't make sense to open this valve.
+        return best1
 
     # case 2: we open this valve, then transition.
-    if u in opened_valves or flow_rate[u] == 0:
-        # early exit if it doesn't make sense to open the valve
-        return best
     score = flow_rate[u] * (time - 1)
-    opened_valves = opened_valves | {u}
-    best = score + max(max_flow(v, opened_valves, time - 2) for v in graph[u])
+    new_opened_valves = opened_valves | {u}
+    best2 = score + max(max_flow(v, new_opened_valves, time - 2) for v in graph[u])
+    
+    return max(best1,best2)
 
-    return best
-
-best = max_flow('AA', frozenset(), 15)
-print(best, f'calls = {cnt[0]}')
+best = max_flow('AA', frozenset())
+print(best)
