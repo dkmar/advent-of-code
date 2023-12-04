@@ -13,7 +13,7 @@ tm=$(date +%H:%M)
 cat > $outfile <<EOF
 #!/usr/bin/env python3
 import util
-import sys, math
+import sys, math, re, functools, operator
 import numpy as np
 from collections import defaultdict, deque, Counter
 
@@ -22,8 +22,8 @@ from collections import defaultdict, deque, Counter
 infile = sys.argv[1] if len(sys.argv)>1 else '$DAY.in'
 with open(infile, 'r') as f:
     #data = f.read().strip()
-    lines = list(map(str.strip, f.readlines()))
-    #grid = list(list(ln) for ln in map(str.strip, f.readlines()))
+    lines = list(map(str.strip, f))
+    #grid = list(list(ln) for ln in map(str.strip, f))
 
 '''
 $sample
@@ -32,4 +32,4 @@ $sample
 EOF
 
 chmod +x $outfile
-subl $outfile:19 $DAY.in
+fleet $outfile $DAY.in
