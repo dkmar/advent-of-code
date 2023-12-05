@@ -20,3 +20,12 @@ def get_ints(s:str, negatives:bool=False) -> list[int]:
     if negatives:
         return list(map(int, re.findall(r'-?\d+', s)))
     return list(map(int, re.findall(r'\d+', s)))
+
+# until python 3.12 becomes default on homebrew.
+def batched(iterable, n):
+    # batched('ABCDEFG', 3) --> ABC DEF G
+    if n < 1:
+        raise ValueError('n must be at least one')
+    it = iter(iterable)
+    while batch := tuple(itertools.islice(it, n)):
+        yield batch

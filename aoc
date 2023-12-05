@@ -1,29 +1,30 @@
 #!/bin/zsh
 
 # Usage: ./aoc 5
-# downloads the input file; generates solution file; and opens it in sublime text.
+# downloads the input file; generates solution file; and opens it in fleet.
 
 DAY=$1
 
 ./input_dl $DAY
-sample=$(head -5 $DAY.in | cut -c 1-50)
+sample=$(head -5 $DAY.in | cut -c 1-60)
 outfile="$DAY.py"
 tm=$(date +%H:%M)
 
 cat > $outfile <<EOF
 #!/usr/bin/env python3
 import util
-import sys, math, re, functools, operator
+import sys, math, re, functools, operator, itertools, bisect
 import numpy as np
 from collections import defaultdict, deque, Counter
 
 # $tm
 
 infile = sys.argv[1] if len(sys.argv)>1 else '$DAY.in'
-with open(infile, 'r') as f:
-    #data = f.read().strip()
-    lines = list(map(str.strip, f))
-    #grid = list(list(ln) for ln in map(str.strip, f))
+f = open(infile, 'r') if infile != '-' else sys.stdin
+
+#data = f.read().strip()
+lines = list(map(str.strip, f))
+#grid = list(list(ln) for ln in map(str.strip, f))
 
 '''
 $sample
