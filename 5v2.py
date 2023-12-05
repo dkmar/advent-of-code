@@ -34,14 +34,13 @@ have ranges (start, end, diff)
 seeds = parts[0].split(': ')[1].split()
 seeds = [int(seed) for seed in seeds]
 
-lookup: dict[str, str] = {}
+next_category: dict[str, str] = {}
 maps: dict[str, P.IntervalDict] = {}
 for part in parts[1:]:
     lines = part.splitlines()
-    title = lines[0].split(' map:')[0]
-    x = title.split('-')
-    src, dst = x[0], x[2]
-    lookup[src] = dst
+    title = lines[0].split(' map:')[0].split('-')
+    src, dst = title[0], title[2]
+    next_category[src] = dst
 
     range_mappings = P.IntervalDict()
     for line in lines[1:]:
@@ -58,7 +57,7 @@ def get_location(src: str, loc: int) -> int:
     if src == 'location':
         return loc
     
-    dst = lookup[src]
+    dst = next_category[src]
     dst_subranges_map = maps[dst]
     diff = dst_subranges_map.get(loc, default=0)
 
@@ -78,8 +77,8 @@ def next_ranges(dst: str, ranges: list[tuple[int, int]]):
     '''
     dst_range_map = maps[dst]
     for start, end in ranges:
-        src_range = P.closedopen(start, end)
         subranges = []
+        src_range = P.closedopen(start, end)
         dst_subranges_map = dst_range_map.get(src_range, default=0)
         for dst_range, diff in dst_subranges_map.items():
             subranges.append((dst_range.lower + diff, dst_range.upper + diff))
@@ -91,7 +90,7 @@ def get_min_loc(src: str, src_ranges: list[tuple[int, int]]):
     if src == 'location':
         return min(start for start, end in src_ranges)
 
-    dst = lookup[src]
+    dst = next_category[src]
     all_dst_ranges = next_ranges(dst, src_ranges)
     return min(get_min_loc(dst, dst_ranges) for dst_ranges in all_dst_ranges)
 
