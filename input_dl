@@ -1,7 +1,0 @@
-#!/bin/bash
-DAY=$1
-SESSION=53616c7465645f5f518ed450e08f99e59aeaee26de4f5a189b8c221079b24156fa072f0fb1e26327ba91443f092d806af54a9febbd12ff2d0d01a18edfeff9e1
-
-curl "https://adventofcode.com/2023/day/$DAY/input" --output "$DAY.in" \
--H "Cookie: session=$SESSION" \
--H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.1 Safari/605.1.15'
