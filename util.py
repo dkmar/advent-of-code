@@ -136,8 +136,8 @@ class Grid(list):
 
     def __init__(self, data):
         super().__init__(data)
-        self.m = len(data)
-        self.n = len(data[0])
+        self.m = len(self)
+        self.n = len(self[0])
 
     def __getitem__(self, loc):
         if isinstance(loc, tuple):
@@ -162,6 +162,12 @@ class Grid(list):
 
     def rows(self):
         return enumerate(self)
+
+    def keys(self):
+        m, n = self.m, self.n
+        for i in range(m):
+            for j in range(n):
+                yield i, j
 
     def values(self):
         for row in self:
