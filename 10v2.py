@@ -48,13 +48,12 @@ big_char = {
 def neighbors(i, j, ch):
     yield from C.neighbors(i, j, grid.m, grid.n, dirs[ch])
     
-    
+# discover loop and track furthest
 start = grid.find('S')
 q = deque([start])
 loop = {start}
 
 steps = 0
-last = {}
 while q:
     steps += 1
     for _ in range(len(q)):
@@ -63,10 +62,13 @@ while q:
             if nbr not in loop:
                 q.append(nbr)
                 loop.add(nbr)
-                last = nbr, steps
 
         loop.add((i, j))
 
+# furthest was added to queue one loop before the last (where frontier is finally exhausted).
+furthest = steps - 1
+
+# virtually remap to 3x and also remap all non-loop chars to '.'
 class grid3x:
     m, n = 3 * grid.m, 3 * grid.n
     def __class_getitem__(cls, item):
@@ -78,36 +80,33 @@ class grid3x:
         
 
 def get_enclosed() -> int:
-    def outside3x():
+    # get all 3x locations for those outside the loop.
+    def outside_locs():
         i, j = next(loc for loc in grid.keys() if loc not in loop)
-        i, j = 3*i, 3*j
-    
-        seen = {(i, j)}
-        q = deque([(i,j)])
+        seen = {(3*i, 3*j)}
+        q = deque([(3*i, 3*j)])
         while q:
             i, j = q.popleft()
+            # yield if this is the canonical 3x loc
+            if i % 3 == 0 and j % 3 == 0:
+                yield i, j
+
             for nbr in util.neighbors(i, j, grid3x.m, grid3x.n):
                 if nbr not in seen and grid3x[nbr] == '.':
                     seen.add(nbr)
                     q.append(nbr)
     
-        return seen
-    
+    # determine which locations are entirely empty by checking the middle char.
     def is_empty(i, j):
-        for di in range(3):
-            for dj in range(3):
-                if grid3x[i+di, j+dj] != '.':
-                    return False
-        
-        return True
+        return grid3x[i+1, j+1] == '.'
     
-    outside = sum(1 for i,j in outside3x()
-                  if i%3 == j%3 == 0 and is_empty(i, j)) 
-    
+    # count once per 3x cell representing an outside cell.
+    outside = sum(1 for i,j in outside_locs() if is_empty(i, j))
+    # N - those outside the loop - those on the loop = those enclosed by the loop
     return (grid.m * grid.n) - outside - len(loop)
             
 
-print('part 1: ', last)
+print('part 1: ', furthest)
 print('part 2: ', get_enclosed())
 
 # with open('9out.txt', 'w') as wf:
