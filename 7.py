@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import util
+import lib
 import sys, math, re, functools, operator, itertools, bisect
 import numpy as np
 from collections import defaultdict, deque, Counter

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import bisect
 
-import util
+import lib
 import sys, math, re, functools, operator, itertools
 import numpy as np
 from collections import defaultdict, deque, Counter
@@ -47,7 +47,7 @@ def part1():
             if ch == '.' or ch.isdigit():
                 continue
     
-            for ni, nj in util.neighbors8(i, j, len(lines), len(line)):
+            for ni, nj in lib.neighbors8(i, j, len(lines), len(line)):
                 if grid[ni][nj].isdigit():
                     ind = bisect.bisect_left(start_ends[ni], (nj, 0))
                     good.add(start_ends[ni][ind][1])
@@ -63,7 +63,7 @@ def part2():
                 continue
             
             new_good = set()
-            for ni, nj in util.neighbors8(i, j, len(lines), len(line)):
+            for ni, nj in lib.neighbors8(i, j, len(lines), len(line)):
                 if grid[ni][nj].isdigit():
                     ind = bisect.bisect_left(start_ends[ni], (nj, 0))
                     new_good.add(start_ends[ni][ind][1])

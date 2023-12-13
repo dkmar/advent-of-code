@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import util
+import lib
 import sys, math, re, functools, operator, itertools, bisect
 import numpy as np
 from collections import defaultdict, deque, Counter
@@ -73,7 +73,7 @@ min_loc = min(map(get_location, seeds))
 print('part 1: ', min_loc)
 
 # -------------------------------------------------------
-seeds2 = util.batched(seeds, 2)
+seeds2 = lib.batched(seeds, 2)
 
 def next_ranges(dst: str, ranges: list[tuple[int, int]]):
     '''

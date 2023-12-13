@@ -1,24 +1,25 @@
-import heapq
-import itertools
-import operator
-import re
-import sys
 from collections.abc import Sequence, Iterable
 from typing import LiteralString
 from functools import cache
+import sys, math, re, functools, operator, itertools, bisect, heapq
+import numpy as np
+from collections import defaultdict, deque, Counter
+from itertools import accumulate, chain, pairwise, cycle, product, combinations, groupby, repeat
+from more_itertools import sliding_window
+from functools import cache, reduce
 
-dirs8 = [(di, dj) for di, dj in itertools.product((-1, 0, 1), (-1, 0, 1))
-         if (di, dj) != (0, 0)]
+_dirs8 = [(di, dj) for di, dj in itertools.product((-1, 0, 1), (-1, 0, 1))
+          if (di, dj) != (0, 0)]
 
 
 def neighbors8(i: int, j: int, m: int, n: int):
-    for di, dj in dirs8:
+    for di, dj in _dirs8:
         ni, nj = i + di, j + dj
         if 0 <= ni < m and 0 <= nj < n:
             yield ni, nj
 
 
-def neighbors(i: int, j: int, m: int, n: int) -> list[tuple[int, int]]:
+def neighbors4(i: int, j: int, m: int, n: int) -> list[tuple[int, int]]:
     return [(ni, nj) for (ni, nj)
             in ((i - 1, j), (i, j + 1), (i + 1, j), (i, j - 1))
             if 0 <= ni < m and 0 <= nj < n]
@@ -28,6 +29,12 @@ def get_ints(s: str, negatives: bool = False) -> list[int]:
     if negatives:
         return list(map(int, re.findall(r'-?\d+', s)))
     return list(map(int, re.findall(r'\d+', s)))
+
+
+def ringwise(arr: list, i: int, j: int | None = None):
+    if j is None:
+        j = i
+    return zip(arr[i::-1], arr[j:])
 
 
 # until python 3.12 becomes default on homebrew.

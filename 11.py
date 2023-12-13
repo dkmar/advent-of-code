@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import util
+import lib
 import sys, math, re, functools, operator, itertools, bisect
 import numpy as np
 from collections import defaultdict, deque, Counter
@@ -10,9 +10,9 @@ from functools import cache, reduce
 infile = sys.argv[1] if len(sys.argv)>1 else '11.in'
 f = open(infile, 'r') if infile != '-' else sys.stdin
 
-data = util.Input(f.read())
-grid = util.Grid.from_text(data)
-# lines = list(map(util.Input, f))
+data = lib.Input(f.read())
+grid = lib.Grid.from_text(data)
+# lines = list(map(lib.Input, f))
 
 '''
 ...............#............................................
@@ -31,8 +31,8 @@ p1 = 0
 p2 = 0
 V = grid.where('#')
 for (ui, uj), (vi, vj) in combinations(V, 2):
-    i1, i2 = util.sort2(ui, vi)
-    j1, j2 = util.sort2(uj, vj)
+    i1, i2 = lib.sort2(ui, vi)
+    j1, j2 = lib.sort2(uj, vj)
     
     er = sum(1 for r in empty_rows if i1 < r < i2)
     ec = sum(1 for c in empty_cols if j1 < c < j2)

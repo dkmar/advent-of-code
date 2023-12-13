@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import util
+import lib
 import sys, math, re, functools, operator, itertools, bisect
 import numpy as np
 from collections import defaultdict, deque, Counter
@@ -10,9 +10,9 @@ from functools import cache, reduce
 infile = sys.argv[1] if len(sys.argv) > 1 else '10.in'
 f = open(infile, 'r') if infile != '-' else sys.stdin
 
-data = util.Input(f.read())
-# lines = list(map(util.Input, f))
-grid = util.Grid.from_text(data)
+data = lib.Input(f.read())
+# lines = list(map(lib.Input, f))
+grid = lib.Grid.from_text(data)
 
 '''
 F-|F|7LJ7F7.L-J7L-L-7L-J7.FF.F|--J.L-7--7.L-7FFFF7-F|---F--L
@@ -22,7 +22,7 @@ F7|-LJF-F--LJ-FF7L|7FJJLF7FF-J-|-F.L.L7LLL7|F7JLF---.F-LJ|F-
 FFFJ||J.LFJJLJ7.J7|-77-L|-FL-L-F.LL|LJ|FJ-FJF||-F7F7-|FF7FF7
 '''
 
-from util import Cardinal as C
+from lib import Cardinal as C
 dirs = {
     '|': C.N | C.S,
     '-': C.E | C.W,

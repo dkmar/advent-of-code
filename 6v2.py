@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import util
+import lib
 import sys, math, re, functools, operator, itertools, bisect
 import numpy as np
 from collections import defaultdict, deque, Counter
@@ -31,8 +31,8 @@ find # ways we can win each race
 then return product of these # ways
 '''
 
-times = util.get_ints(lines[0])
-record_dists = util.get_ints(lines[1])
+times = lib.get_ints(lines[0])
+record_dists = lib.get_ints(lines[1])
 
 
 def ways_to_win(time, record_dist):

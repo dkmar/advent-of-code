@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import util
+import lib
 import sys, math, re, functools, operator, itertools, bisect
 import numpy as np
 from collections import defaultdict, deque, Counter
@@ -11,9 +11,9 @@ from functools import cache, reduce
 infile = sys.argv[1] if len(sys.argv)>1 else '12.in'
 f = open(infile, 'r') if infile != '-' else sys.stdin
 
-lines = list(map(util.Input, f))
-#data = util.Input(f.read())
-#grid = util.Grid.from_text(data)
+lines = list(map(lib.Input, f))
+#data = lib.Input(f.read())
+#grid = lib.Grid.from_text(data)
 
 '''
 ??.?#??#?#??##???? 2,4,6,1
@@ -84,7 +84,7 @@ def countWays(springs: str, broken: tuple[int, ...]) -> int:
 part1 = part2 = 0
 for line in lines:
     springs, broken = line.split()
-    broken = tuple(util.get_ints(broken))
+    broken = tuple(lib.get_ints(broken))
     part1 += waysV2(springs + '.', broken)
 
     springs = '?'.join(repeat(springs, 5)) + '.'

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import util
+import lib
 import sys, math, re, functools, operator, itertools, bisect
 import numpy as np
 from collections import defaultdict, deque, Counter
@@ -13,7 +13,7 @@ f = open(infile, 'r') if infile != '-' else sys.stdin
 
 # data = f.read().strip()
 # lines = list(map(str.strip, f))
-lines = list(map(util.Input, f))
+lines = list(map(lib.Input, f))
 # grid = list(list(ln) for ln in map(str.strip, f))
 
 '''

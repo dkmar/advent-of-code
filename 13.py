@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import util
+import lib
 import sys, math, re, functools, operator, itertools, bisect
 import numpy as np
 from collections import defaultdict, deque, Counter
@@ -10,9 +10,9 @@ from functools import cache, reduce
 infile = sys.argv[1] if len(sys.argv)>1 else '13.in'
 f = open(infile, 'r') if infile != '-' else sys.stdin
 
-# lines = list(map(util.Input, f))
-data = util.Input(f.read())
-#grid = util.Grid.from_text(data)
+# lines = list(map(lib.Input, f))
+data = lib.Input(f.read())
+#grid = lib.Grid.from_text(data)
 blocks = data.split('\n\n')
 patterns = [pat.splitlines() for pat in blocks]
 '''

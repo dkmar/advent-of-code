@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import util
+import lib
 import sys, math, re, functools, operator, itertools, bisect
 import numpy as np
 from collections import defaultdict, deque, Counter
@@ -11,7 +11,7 @@ infile = sys.argv[1] if len(sys.argv) > 1 else '9.in'
 f = open(infile, 'r') if infile != '-' else sys.stdin
 
 # data = f.read().strip()
-lines = list(map(util.Input, f))
+lines = list(map(lib.Input, f))
 # grid = list(list(ln) for ln in map(str.strip, f))
 
 '''
@@ -22,7 +22,7 @@ lines = list(map(util.Input, f))
 9 26 47 70 93 114 131 142 145 138 119 86 37 -30 -117 -226 -3
 '''
 
-histories = [util.get_ints(line, negatives=True) for line in lines]
+histories = [lib.get_ints(line, negatives=True) for line in lines]
 
 
 def get_next(h: list[int]):
