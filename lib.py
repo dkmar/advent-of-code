@@ -85,6 +85,9 @@ def drop(s: str, chrs: str) -> str:
     trans = Input.make_tr('', '', chrs)
     return s.translate(trans)
 
+def all_in(s: str, chrs: str) -> bool:
+    return not drop(s, chrs)
+
 
 class Input(str):
     def __new__(cls, content):

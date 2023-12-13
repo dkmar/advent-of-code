@@ -1,19 +1,11 @@
 #!/usr/bin/env python3
-from networkx.algorithms.centrality import group
-
-import lib
-import sys, math, re, functools, operator, itertools, bisect
-import numpy as np
-from collections import defaultdict, deque, Counter
-from itertools import accumulate, chain, pairwise, cycle, product, combinations, groupby, repeat
-from more_itertools import sliding_window
-from functools import cache, reduce
+from lib import *
 
 # 14:53
 infile = sys.argv[1] if len(sys.argv) > 1 else '12.in'
 f = open(infile, 'r') if infile != '-' else sys.stdin
 
-lines = list(map(lib.Input, f))
+lines = list(map(Input, f))
 # data = lib.Input(f.read())
 # grid = lib.Grid.from_text(data)
 
@@ -73,7 +65,7 @@ def waysV3(springs: str, broken: tuple[int, ...]) -> int:
     need = broken[0]
     if springs[0] in '#?' and len(springs) > need:
         # if we terminate with a good char (for separation) and this window is all #: count
-        if (springs[need] in '.?') and not lib.drop(springs[:need], '#?'):
+        if (springs[need] in '.?') and all_in(springs[:need], '#?'):
             ways += waysV3(springs[need + 1:], broken[1:])
     if springs[0] in '.?':
         ways += waysV3(springs[1:], broken)
@@ -106,7 +98,7 @@ def countWays(springs: str, broken: tuple[int, ...]) -> int:
 part1 = part2 = 0
 for line in lines:
     springs, broken = line.split()
-    broken = tuple(lib.get_ints(broken))
+    broken = tuple(get_ints(broken))
     part1 += waysV3(springs + '.', broken)
 
     springs = '?'.join(repeat(springs, 5)) + '.'
