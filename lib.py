@@ -81,6 +81,11 @@ def tokenize(s: str, delims: Iterable[str]) -> list[str]:
     return s.translate(tr).split()
 
 
+def drop(s: str, chrs: str) -> str:
+    trans = Input.make_tr('', '', chrs)
+    return s.translate(trans)
+
+
 class Input(str):
     def __new__(cls, content):
         return super().__new__(cls, content.rstrip())

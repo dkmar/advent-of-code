@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from networkx.algorithms.centrality import group
+
 import lib
 import sys, math, re, functools, operator, itertools, bisect
 import numpy as np
@@ -8,12 +10,12 @@ from more_itertools import sliding_window
 from functools import cache, reduce
 
 # 14:53
-infile = sys.argv[1] if len(sys.argv)>1 else '12.in'
+infile = sys.argv[1] if len(sys.argv) > 1 else '12.in'
 f = open(infile, 'r') if infile != '-' else sys.stdin
 
 lines = list(map(lib.Input, f))
-#data = lib.Input(f.read())
-#grid = lib.Grid.from_text(data)
+# data = lib.Input(f.read())
+# grid = lib.Grid.from_text(data)
 
 '''
 ??.?#??#?#??##???? 2,4,6,1
@@ -39,6 +41,7 @@ need = broken[0] - group.count(#)
 ??#??? 3 2
 '''
 
+
 @cache
 def waysV2(springs: str, broken: tuple[int, ...], group_size: int = 0) -> int:
     if not springs:
@@ -54,7 +57,26 @@ def waysV2(springs: str, broken: tuple[int, ...], group_size: int = 0) -> int:
         if group_size == 0:
             ways += waysV2(springs[1:], broken, 0)
         elif group_size == broken[0]:
-            ways += waysV2(springs[1:], broken[1:],0)
+            ways += waysV2(springs[1:], broken[1:], 0)
+
+    return ways
+
+
+@cache
+def waysV3(springs: str, broken: tuple[int, ...]) -> int:
+    if not broken:
+        return int('#' not in springs)
+    if not springs:
+        return 0
+
+    ways = 0
+    need = broken[0]
+    if springs[0] in '#?' and len(springs) > need:
+        # if we terminate with a good char (for separation) and this window is all #: count
+        if (springs[need] in '.?') and not lib.drop(springs[:need], '#?'):
+            ways += waysV3(springs[need + 1:], broken[1:])
+    if springs[0] in '.?':
+        ways += waysV3(springs[1:], broken)
 
     return ways
 
@@ -85,12 +107,12 @@ part1 = part2 = 0
 for line in lines:
     springs, broken = line.split()
     broken = tuple(lib.get_ints(broken))
-    part1 += waysV2(springs + '.', broken)
+    part1 += waysV3(springs + '.', broken)
 
     springs = '?'.join(repeat(springs, 5)) + '.'
     broken = broken * 5
-    part2 += waysV2(springs, broken)
+    part2 += waysV3(springs, broken)
 
 print('Part 1:', part1)
 print('Part 2:', part2)
-print(waysV2.cache_info())
+print(waysV3.cache_info())
