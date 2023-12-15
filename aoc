@@ -1,36 +1,45 @@
 #!/bin/zsh
-
-# Usage: ./aoc 5
-# downloads the input file; generates solution file; and opens it in fleet.
+# Usage: ./aoc 5 [2023] [folder]
+# downloads the input file; generates solution file; and opens it in pycharm.
+export BETTER_EXCEPTIONS=1
 
 DAY=$1
+CURRENT_YEAR=$(date +%Y)
+YEAR=${2:-$CURRENT_YEAR}
+PATH_PREFIX=${2:+$2/}$DAY
+INPUTFILE="$PATH_PREFIX.in"
+OUTFILE="$PATH_PREFIX.py"
+if [[ $# -eq 2 ]]
+then
+    mkdir -p $YEAR
+fi
 
-./input_dl $DAY
-sample=$(head -5 $DAY.in | cut -c 1-60)
-outfile="$DAY.py"
+./input_dl $DAY $YEAR $PATH_PREFIX
+sample=$(head -5 $INPUTFILE | cut -c 1-60)
 tm=$(date +%H:%M)
 
-cat > $outfile <<EOF
+cat > $OUTFILE <<EOF
 #!/usr/bin/env python3
-import util
-import sys, math, re, functools, operator, itertools, bisect
-import numpy as np
-from collections import defaultdict, deque, Counter
+from lib import *
 
 # $tm
-
 infile = sys.argv[1] if len(sys.argv)>1 else '$DAY.in'
 f = open(infile, 'r') if infile != '-' else sys.stdin
 
-#data = f.read().strip()
-lines = list(map(str.strip, f))
-#grid = list(list(ln) for ln in map(str.strip, f))
+lines = list(map(Input, f))
+#data = Input(f.read())
+#grid = Grid.from_text(data)
 
 '''
 $sample
 '''
+part1 = part2 = 0
 
+
+
+print(f'Part 1: {part1}')
+print(f'Part 2: {part2}')
 EOF
 
-chmod +x $outfile
-fleet $outfile $DAY.in
+chmod +x $OUTFILE
+pycharm $OUTFILE $INPUTFILE
