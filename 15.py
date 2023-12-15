@@ -35,9 +35,9 @@ for step in map(Input, steps):
         case (lbl, '=', fl):
             boxes[step_hash(lbl)][lbl] = int(fl)
 
-for (label, box) in boxes.items():
-    for slot, focal_len in enumerate(box.values(), 1):
-        part2 += (label + 1) * slot * focal_len
+for (box_id, box) in boxes.items():
+    for lens, focal_len in enumerate(box.values(), 1):
+        part2 += (box_id + 1) * lens * focal_len
 
 print(f'Part 1: {part1}')
 print(f'Part 2: {part2}')
