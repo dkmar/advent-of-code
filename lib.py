@@ -1,8 +1,9 @@
 from collections.abc import Sequence, Iterable
-from typing import LiteralString
+from typing import LiteralString, Self
 from functools import cache
 import sys, math, re, functools, operator, itertools, bisect, heapq
 import numpy as np
+from numpy.polynomial import Polynomial
 from collections import defaultdict, deque, Counter
 from itertools import accumulate, chain, pairwise, cycle, product, combinations, groupby, repeat
 from more_itertools import sliding_window
@@ -113,6 +114,11 @@ class Input(str):
         trans = Input.make_tr(delims, ' ', '')
         return self.translate(trans).split()
 
+    def partition_any(self, delims: Iterable[str], label: str = ' ') -> tuple[str, str, str]:
+        trans = Input.make_tr(delims, label, '')
+        delim_idx = self.translate(trans).find(label)
+        return self[:delim_idx], self[delim_idx], self[delim_idx+1:]
+
     def to_int(self) -> int:
         return int(self)
 
@@ -168,6 +174,9 @@ class Grid(list):
         else:
             super().__setitem__(loc, value)
 
+    def copy(self) -> Self:
+        return type(self)(row[:] for row in self)
+
     @classmethod
     def from_text(cls, text: str):
         return cls([list(line) for line in text.splitlines()])
@@ -209,6 +218,36 @@ class Grid(list):
         return None
 
     find = first
+
+    def print(self):
+        for row in self:
+            print(''.join(map(str, row)))
+        print()
+
+    def rotate_left(self):
+        new_grid = [list(col) for _, col in self.cols()]
+        self.clear()
+        self.extend(reversed(new_grid))
+        self.m = len(self)
+        self.n = len(self[0])
+
+    def rotate_right(self):
+        new_grid = [list(reversed(col)) for _, col in self.cols()]
+        self.clear()
+        self.extend(new_grid)
+        self.m = len(self)
+        self.n = len(self[0])
+
+    def to_tuple(self):
+        return tuple(map(tuple, self))
+
+    def __str__(self):
+        return '\n'.join(''.join(map(str, row)) for row in self)
+
+    def __hash__(self):
+        return hash(self.to_tuple())
+
+
 
 
 def sort2(a, b):
