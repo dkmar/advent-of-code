@@ -1,9 +1,10 @@
 from collections.abc import Sequence, Iterable
-from typing import LiteralString, Self
+from typing import Any, LiteralString, Self
 from functools import cache
 import sys, math, re, functools, operator, itertools, bisect, heapq
 import numpy as np
 from numpy.polynomial import Polynomial
+import portion as P
 from collections import defaultdict, deque, Counter
 from itertools import accumulate, chain, pairwise, cycle, product, combinations, groupby, repeat
 from more_itertools import sliding_window
@@ -128,8 +129,8 @@ class Input(str):
 
 class Cardinal:
     N = U = 1
-    W = L = 2
-    S = D = 4
+    S = D = 2
+    W = L = 4
     E = R = 8
     ALL = N | W | S | E
     NULL = 0
@@ -145,6 +146,45 @@ class Cardinal:
         if dirs & Cardinal.E and j + 1 < n:
             yield i, j + 1
 
+class ComplexCardinal:
+    N = U = +0-1j
+    S = D = +0+1j
+    W = L = -1+0j
+    E = R = +1+0j
+    FOUR_DIRECTIONS = (U, D, L, R)
+    ROTATE_LEFT = -1j
+    ROTATE_RIGHT = 1j
+    # to rotate "left", multiply by -1j
+    # to rotate "right", multiply by 1j
+    # this is opposite bc North and South are flipped.
+
+class ZGrid(dict[complex, Any]):
+    def __init__(self, data: dict[complex, Any], m: int, n: int):
+        super().__init__(data)
+        self.m = m
+        self.n = n
+
+    @classmethod
+    def from_text(cls, text: str):
+        lines = text.splitlines()
+        return cls({
+            complex(x,y): ch
+            for y, line in enumerate(lines)
+            for x, ch in enumerate(line)
+        }, len(lines), len(lines[0]))
+
+    def set_all(self, locs: Iterable[complex], value: Any):
+        for loc in locs:
+            self[loc] = value
+
+    def print(self):
+        row = []
+        for j, loc in enumerate(sorted(self.keys(), key=lambda z: (z.imag, z.real)), 1):
+            row.append(self[loc])
+            if j % self.n == 0:
+                print(''.join(map(str, row)))
+                row.clear()
+        print()
 
 class Grid(list):
     '''
@@ -164,6 +204,9 @@ class Grid(list):
         if isinstance(loc, tuple):
             i, j = loc
             return super().__getitem__(i)[j]
+        elif isinstance(loc, complex):
+            i, j = int(loc.imag), int(loc.real)
+            return super().__getitem__(i)[j]
         else:
             return super().__getitem__(loc)
 
@@ -171,11 +214,23 @@ class Grid(list):
         if isinstance(loc, tuple):
             i, j = loc
             super().__getitem__(i)[j] = value
+        elif isinstance(loc, complex):
+            i, j = int(loc.imag), int(loc.real)
+            super().__getitem__(i)[j] = value
         else:
             super().__setitem__(loc, value)
 
     def copy(self) -> Self:
         return type(self)(row[:] for row in self)
+
+    def get(self, loc):
+        if isinstance(loc, tuple):
+            if (0 <= loc[0] < self.m) and (0 <= loc[1] < self.n):
+                return self[loc]
+        elif isinstance(loc, complex):
+            if (0 <= loc.imag < self.m) and (0 <= loc.real < self.n):
+                return self[int(loc.imag), int(loc.real)]
+        return None
 
     @classmethod
     def from_text(cls, text: str):
