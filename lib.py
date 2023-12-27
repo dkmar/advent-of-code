@@ -1,4 +1,4 @@
-from collections.abc import Sequence, Iterable
+from collections.abc import Sequence, Iterable, Iterator, Callable
 from typing import Any, LiteralString, Self
 from functools import cache
 import sys, math, re, functools, operator, itertools, bisect, heapq
@@ -7,6 +7,7 @@ from numpy.polynomial import Polynomial
 import portion as P
 from collections import defaultdict, deque, Counter, namedtuple
 from sortedcontainers import *
+import dataclasses
 from itertools import (
     accumulate,
     chain,
@@ -30,6 +31,7 @@ class ComplexExt(complex):
     @property
     def x(self):
         return self.real
+    j = x
 
     @extension
     @property
@@ -40,6 +42,7 @@ class ComplexExt(complex):
     @property
     def y(self):
         return self.imag
+    i = y
 
     @extension
     @property
@@ -56,9 +59,33 @@ class ComplexExt(complex):
     def xyi(self):
         return int(self.real), int(self.imag)
 
+    @extension
+    def __mod__(self, other):
+        if isinstance(other, tuple):
+            return complex(self.real % other[0], self.imag % other[1])
+        elif isinstance(other, (int, float)):
+            return complex(self.real % other, self.imag % other)
+        elif isinstance(other, complex):
+            return complex(self.real % other.real, self.imag % other.imag)
+
+    @extension
+    def __imod__(self, other):
+        return self.__mod__(other)
+
 
 extend_type_with(complex, ComplexExt)
 
+@dataclasses.dataclass
+class Range3D:
+    x: P.Interval
+    y: P.Interval
+    z: P.Interval
+Point3D = namedtuple("Point3D", ['x', 'y', 'z'])
+
+@dataclasses.dataclass
+class Range2D:
+    x: P.Interval
+    y: P.Interval
 Line = namedtuple("Line", ["s", "e"])
 
 _dirs8 = [
@@ -107,7 +134,7 @@ def batched(iterable, n):
         yield batch
 
 
-def argsort(seq: Sequence, key: callable = None, reverse: bool = False) -> list[int]:
+def argsort(seq: Sequence, key: Callable = None, reverse: bool = False) -> list[int]:
     return sorted(
         range(len(seq)),
         key=(lambda i: key(seq[i])) if key else seq.__getitem__,
@@ -115,7 +142,7 @@ def argsort(seq: Sequence, key: callable = None, reverse: bool = False) -> list[
     )
 
 
-def argmax(seq: Sequence, key: callable = None) -> int:
+def argmax(seq: Sequence, key: Callable = None) -> int:
     if key:
         key = lambda i: key(seq[i])
     else:
@@ -124,7 +151,7 @@ def argmax(seq: Sequence, key: callable = None) -> int:
     return max(range(len(seq)), key=key)
 
 
-def argmaxes(seq: Sequence, key: callable = None) -> Iterable:
+def argmaxes(seq: Sequence, key: Callable = None) -> Iterable:
     N = len(seq)
     if key:
         seq = map(key, seq)
@@ -224,6 +251,9 @@ class ComplexCardinal(complex):
     # to rotate "right", multiply by 1j
     # this is opposite bc North and South are flipped.
 
+def zmanhattan(a: complex, b: complex = 0) -> int:
+    dz = a - b
+    return abs(int(dz.real)) + abs(int(dz.imag))
 
 class PriorityQueue(list):
     def __init__(self, data=[]):
@@ -297,7 +327,21 @@ class ZGrid(dict[complex, Any]):
         )
 
     @classmethod
-    def from_text_with_transform(cls, text: str, transform: callable):
+    def from_text_with_drop(cls, text: str, drop_chs: str):
+        lines = text.splitlines()
+        return cls(
+            {
+                complex(x, y): ch
+                for y, line in enumerate(lines)
+                for x, ch in enumerate(line)
+                if ch not in drop_chs
+            },
+            len(lines),
+            len(lines[0]),
+        )
+
+    @classmethod
+    def from_text_with_transform(cls, text: str, transform: Callable):
         lines = text.splitlines()
         return cls(
             {
@@ -316,6 +360,12 @@ class ZGrid(dict[complex, Any]):
     def all(self):
         for j, loc in enumerate(sorted(self.keys(), key=lambda z: (z.imag, z.real)), 1):
             yield self[loc]
+
+    def locs(self):
+        yield from sorted(self.keys(), key=lambda z: (z.imag, z.real))
+
+    def find(self, v):
+        return next((loc for loc in self.locs() if self[loc] == v), None)
 
     def rows(self):
         row = []
@@ -478,3 +528,23 @@ def zsort2(a: complex, b: complex):
         return a, b
     else:
         return b, a
+
+def IntervalMultiDict(dicts: list[dict[P.Interval, Any]], how: Callable = set.union):
+    '''
+    Substantially faster than doing P.IntervalDict.combine repeatedly.
+    Portion definitely needs an IntervalMultiDict type.
+    '''
+    def combine(ivds: list[dict[P.Interval, Any]]):
+        match len(ivds):
+            case 0:
+                return P.IntervalDict()
+            case 1:
+                return P.IntervalDict(ivds[0])
+            case cnt:
+                return P.IntervalDict.combine(
+                    combine(ivds[:cnt//2]),
+                    combine(ivds[cnt//2:]),
+                    how=how
+                )
+
+    return combine(dicts)
