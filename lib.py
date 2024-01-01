@@ -1,10 +1,11 @@
 from collections.abc import Sequence, Iterable, Iterator, Callable
-from typing import Any, LiteralString, Self
+from typing import Any
 from functools import cache
 import sys, math, re, functools, operator, itertools, bisect, heapq
 import numpy as np
 from numpy.polynomial import Polynomial
 import portion as P
+import z3
 from collections import defaultdict, deque, Counter, namedtuple
 from sortedcontainers import *
 import dataclasses
@@ -433,7 +434,7 @@ class Grid(list):
         else:
             super().__setitem__(loc, value)
 
-    def copy(self) -> Self:
+    def copy(self):
         return type(self)(row[:] for row in self)
 
     def get(self, loc):
@@ -548,3 +549,6 @@ def IntervalMultiDict(dicts: list[dict[P.Interval, Any]], how: Callable = set.un
                 )
 
     return combine(dicts)
+
+def next_or_none(g):
+    return next(g, None)
