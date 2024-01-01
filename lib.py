@@ -1,4 +1,5 @@
-from collections.abc import Sequence, Iterable, Iterator, Callable
+from collections.abc import Sequence, Iterable, Iterator, Callable, MutableMapping
+import random
 from typing import Any
 from functools import cache
 import sys, math, re, functools, operator, itertools, bisect, heapq
@@ -6,7 +7,7 @@ import numpy as np
 from numpy.polynomial import Polynomial
 import portion as P
 import z3
-from collections import defaultdict, deque, Counter, namedtuple
+from collections import defaultdict, deque, Counter, namedtuple, ChainMap
 from sortedcontainers import *
 import dataclasses
 from itertools import (

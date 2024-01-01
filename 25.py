@@ -50,21 +50,35 @@ class UnionFind:
 
 def find_bipartition(graph: dict, edges: list):
     '''
-    return (# of edges unused), (size of component 1), (size of component 2)
-    The unused edges are those bridging components 1 and 2.
+    Find a bipartition of graph and return statistics about this bipartition.
+    :   (# of bridging edges), (size of component 1), (size of component 2)
+
+    Karger's Algorithm (https://en.wikipedia.org/wiki/Karger%27s_algorithm)
+    - we'll use a union-find to handle graph compression
+    - randomly merge components until only two remain. at this point, we can distinguish
+      a real solution by the # of edges bridging the two components; the solution must have exactly
+      3 because that is the number we wish to cut. We leave the delineation up to the caller and return
+      statistics on the bipartition as noted above.
+    -- the # of bridging edges will be a subset of the edges we still have yet to visit after
+       finding a bipartition.
+
     '''
     uf = UnionFind(N := len(graph))
     component_count = N
 
+    # shuffle all edges upfront for "random" iteration order of edges.
     random.shuffle(edges)
     edge_pool = iter(edges)
     for u,v in edge_pool:
         uv = uf.union(u,v)
         if uv is None:
+            # u and v are already in the same component.
             continue
 
+        # we've merged components u and v to uv.
         component_count -= 1
         if component_count == 2:
+            # bipartition found. count bridges and components size
             bridges = sum(1 for u,v in edge_pool if uf.find(u) != uf.find(v))
 
             c1_size = uf.size[uv]
@@ -75,6 +89,8 @@ def find_bipartition(graph: dict, edges: list):
     raise RuntimeError('Failed to partition graph.')
 
 
+# we will have an integer id mapping for the vertices
+# (for union-find convenience)
 def vertex_to_id(v) -> int:
     if (vid := vertex_id.get(v)) is not None:
         return vid
@@ -97,9 +113,11 @@ for line in lines:
         edges.append((src, dst))
 
 # something like Karger's Algorithm to find minimum cut.
+# we repeatedly find bipartitions until one is our solution.
 while True:
     num_bridges, group1_size, group2_size = find_bipartition(graph, edges)
     if num_bridges == 3:
+        # this bipartition can be created by cutting 3 edges. there we go.
         part1 = group1_size * group2_size
         break
 
