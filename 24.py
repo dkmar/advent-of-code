@@ -51,7 +51,7 @@ def count_test_area_intersections(hailstones: list):
     test_area_lowerbound = np.array([200000000000000]*2)
     test_area_upperbound = np.array([400000000000000]*2)
     for a, b in combinations(hailstones, 2):
-        # no intersection if orthogonal
+        # no intersection if parallel
         if not np.cross(a.dxy, b.dxy):
             continue
 
