@@ -45,11 +45,11 @@ def count_test_area_intersections(hailstones: list):
         # per https://cp-algorithms.com/geometry/basic-geometry.html#line-intersection
         return np.cross(b.xy - a.xy, b.dxy) / np.cross(a.dxy, b.dxy)
 
+    # count if the intersection is within test area AND intersection happens after being thrown
+    # (negative times of intersection do not count)
     cnt = 0
-    # test_area_lowerbound = np.array([7]*2)
-    # test_area_upperbound = np.array([27]*2)
-    test_area_lowerbound = np.array([200000000000000]*2)
-    test_area_upperbound = np.array([400000000000000]*2)
+    test_area_lowerbound = 200000000000000
+    test_area_upperbound = 400000000000000
     for a, b in combinations(hailstones, 2):
         # no intersection if parallel
         if not np.cross(a.dxy, b.dxy):
@@ -59,15 +59,15 @@ def count_test_area_intersections(hailstones: list):
         t1 = time_of_intersection(a,b)
         intersection = a.xy + t1 * a.dxy
 
-        within_test_area = np.all(
-            np.logical_and(
-                intersection >= test_area_lowerbound,
-                intersection <= test_area_upperbound
-            )
+        # verify intersection within test area
+        x, y = intersection
+        within_test_area = (
+            test_area_lowerbound <= x <= test_area_upperbound
+            and
+            test_area_lowerbound <= y <= test_area_upperbound
         )
 
-        # count if the intersection is within test area AND happens after being thrown
-        # (negative times are invalid)
+        # verify valid times of intersection (from both projectiles' perspectives)
         if within_test_area:
             # at t2 'b' will intersect the path of 'a'
             t2 = time_of_intersection(b,a)
